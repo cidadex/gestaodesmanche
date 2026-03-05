@@ -273,7 +273,6 @@ export default function ListagemPecas() {
                 </TableBody>
               </Table>
             </div>
-          </div>
           </ScrollArea>
         </CardContent>
       </Card>

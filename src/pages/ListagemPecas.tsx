@@ -23,41 +23,49 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-  DialogFooter,
 } from '@/components/ui/dialog';
 import {
   Package,
   Search,
   QrCode,
-  DollarSign,
   Trash2,
   Eye,
   ShoppingCart,
+  Car,
+  Bike,
+  Download,
+  Printer,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Label } from '@/components/ui/label';
 import { QRCodeSVG } from 'qrcode.react';
 import { toast } from 'sonner';
-import type { Peca } from '@/types';
+import type { Peca, TipoVeiculo } from '@/types';
+
+const tipoIcons: Record<TipoVeiculo, typeof Car> = {
+  carro: Car,
+  moto: Bike,
+  bicicleta: Bike,
+};
+
+const tipoColors: Record<TipoVeiculo, string> = {
+  carro: 'bg-blue-500/10 text-blue-600',
+  moto: 'bg-purple-500/10 text-purple-600',
+  bicicleta: 'bg-emerald-500/10 text-emerald-600',
+};
 
 export default function ListagemPecas() {
-  const { pecas, darBaixaPeca, removerPeca } = useData();
+  const { pecas, marcas, cores, depositos, localizacoes, darBaixaPeca, removerPeca } = useData();
   const [busca, setBusca] = useState('');
   const [filtroStatus, setFiltroStatus] = useState<string>('todos');
   const [pecaSelecionada, setPecaSelecionada] = useState<Peca | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
-  const [showBaixaModal, setShowBaixaModal] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
-  const [valorVenda, setValorVenda] = useState('');
-  const [qrType, setQrType] = useState<'peca' | 'localizacao'>('peca');
 
   const pecasFiltradas = pecas.filter((peca) => {
     const matchBusca =
       peca.descricao.toLowerCase().includes(busca.toLowerCase()) ||
-      peca.codigo.toLowerCase().includes(busca.toLowerCase()) ||
-      peca.marca.toLowerCase().includes(busca.toLowerCase());
+      peca.codigo.toLowerCase().includes(busca.toLowerCase());
     
     const matchStatus = filtroStatus === 'todos' || peca.status === filtroStatus;
     
@@ -66,12 +74,9 @@ export default function ListagemPecas() {
 
   const handleDarBaixa = () => {
     if (!pecaSelecionada) return;
-    
-    const valor = valorVenda ? parseFloat(valorVenda) : undefined;
-    darBaixaPeca(pecaSelecionada.id, valor);
-    toast.success('Peça marcada como vendida!');
-    setShowBaixaModal(false);
-    setValorVenda('');
+    darBaixaPeca(pecaSelecionada.id);
+    toast.success('Peça marcada com baixa no estoque!');
+    setShowDetailModal(false);
     setPecaSelecionada(null);
   };
 
@@ -89,68 +94,75 @@ export default function ListagemPecas() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'disponivel':
-        return <Badge className="bg-green-500">Disponível</Badge>;
+        return <Badge className="bg-emerald-500 hover:bg-emerald-600">Disponível</Badge>;
       case 'vendido':
-        return <Badge className="bg-blue-500">Vendido</Badge>;
+        return <Badge className="bg-blue-500 hover:bg-blue-600">Baixa</Badge>;
       case 'reservado':
-        return <Badge className="bg-yellow-500">Reservado</Badge>;
+        return <Badge className="bg-amber-500 hover:bg-amber-600">Reservado</Badge>;
       default:
         return <Badge>Desconhecido</Badge>;
     }
   };
 
+  const getMarcaNome = (id: string) => marcas.find(m => m.id === id)?.nome || '-';
+  const getCorNome = (id: string) => cores.find(c => c.id === id)?.nome || '-';
+  const getDepositoNome = (id: string) => depositos.find(d => d.id === id)?.nome || '-';
+  const getLocalizacaoNome = (id: string) => localizacoes.find(l => l.id === id)?.nome || '-';
+
   const getQRCodeData = () => {
     if (!pecaSelecionada) return '';
     
-    if (qrType === 'peca') {
-      return JSON.stringify({
-        tipo: 'peca',
-        id: pecaSelecionada.id,
-        codigo: pecaSelecionada.codigo,
-        descricao: pecaSelecionada.descricao,
-        deposito: pecaSelecionada.deposito,
-        setor: pecaSelecionada.setor,
-        localizacao: pecaSelecionada.localizacao,
-      });
-    } else {
-      return JSON.stringify({
-        tipo: 'localizacao',
-        deposito: pecaSelecionada.deposito,
-        setor: pecaSelecionada.setor,
-        localizacao: pecaSelecionada.localizacao,
-      });
-    }
+    const marca = marcas.find(m => m.id === pecaSelecionada.marcaId)?.nome || '';
+    const cor = cores.find(c => c.id === pecaSelecionada.corId)?.nome || '';
+    const deposito = depositos.find(d => d.id === pecaSelecionada.depositoId)?.nome || '';
+    const localizacao = localizacoes.find(l => l.id === pecaSelecionada.localizacaoId)?.nome || '';
+    
+    return JSON.stringify({
+      tipo: 'peca',
+      id: pecaSelecionada.id,
+      codigo: pecaSelecionada.codigo,
+      descricao: pecaSelecionada.descricao,
+      tipoVeiculo: pecaSelecionada.tipoVeiculo,
+      marca,
+      cor,
+      ano: pecaSelecionada.ano,
+      deposito,
+      localizacao,
+      observacoes: pecaSelecionada.observacoes,
+      dataCadastro: pecaSelecionada.dataCadastro,
+      status: pecaSelecionada.status,
+    }, null, 2);
   };
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Todas as Peças</h1>
+        <h1 className="text-3xl font-bold text-gradient">Todas as Peças</h1>
         <p className="text-slate-500">Gerencie o estoque de peças</p>
       </div>
 
       {/* Filtros */}
-      <Card>
+      <Card className="border-0 shadow-lg">
         <CardContent className="p-4">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
               <Input
-                placeholder="Buscar por código, descrição ou marca..."
+                placeholder="Buscar por código, descrição..."
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                className="pl-10"
+                className="pl-10 h-11"
               />
             </div>
             <Select value={filtroStatus} onValueChange={setFiltroStatus}>
-              <SelectTrigger className="w-full sm:w-48">
+              <SelectTrigger className="w-full sm:w-48 h-11">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="todos">Todos os status</SelectItem>
-                <SelectItem value="disponivel">Disponível</SelectItem>
-                <SelectItem value="vendido">Vendido</SelectItem>
-                <SelectItem value="reservado">Reservado</SelectItem>
+                <SelectItem value="disponivel">✅ Disponível</SelectItem>
+                <SelectItem value="vendido">📦 Baixa</SelectItem>
+                <SelectItem value="reservado">⏳ Reservado</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -158,21 +170,25 @@ export default function ListagemPecas() {
       </Card>
 
       {/* Tabela */}
-      <Card>
-        <CardHeader>
+      <Card className="border-0 shadow-lg">
+        <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 border-b">
           <CardTitle className="flex items-center justify-between">
             <span className="flex items-center gap-2">
-              <Package className="h-5 w-5" />
+              <div className="bg-purple-500 p-2 rounded-lg">
+                <Package className="h-4 w-4 text-white" />
+              </div>
               Peças Cadastradas
             </span>
-            <Badge variant="secondary">{pecasFiltradas.length} peças</Badge>
+            <Badge className="bg-purple-500 text-white px-3 py-1">
+              {pecasFiltradas.length} peças
+            </Badge>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <ScrollArea className="h-[500px]">
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow className="bg-slate-50/50">
                   <TableHead>Código</TableHead>
                   <TableHead>Descrição</TableHead>
                   <TableHead>Marca</TableHead>
@@ -184,51 +200,74 @@ export default function ListagemPecas() {
               <TableBody>
                 {pecasFiltradas.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-slate-500">
-                      Nenhuma peça encontrada
+                    <TableCell colSpan={6} className="text-center py-12 text-slate-500">
+                      <Package className="h-12 w-12 mx-auto mb-3 text-slate-300" />
+                      <p>Nenhuma peça encontrada</p>
                     </TableCell>
                   </TableRow>
                 ) : (
-                  pecasFiltradas.map((peca) => (
-                    <TableRow key={peca.id}>
-                      <TableCell className="font-medium">{peca.codigo}</TableCell>
-                      <TableCell>{peca.descricao}</TableCell>
-                      <TableCell>{peca.marca}</TableCell>
-                      <TableCell>
-                        <span className="text-xs">
-                          {peca.deposito === 'deposito1' ? 'Dep 1' : 'Dep 2'} - 
-                          {peca.setor}
-                        </span>
-                      </TableCell>
-                      <TableCell>{getStatusBadge(peca.status)}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-1">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => {
-                              setPecaSelecionada(peca);
-                              setShowDetailModal(true);
-                            }}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          {peca.status === 'disponivel' && (
+                  pecasFiltradas.map((peca) => {
+                    const TipoIcon = tipoIcons[peca.tipoVeiculo];
+                    return (
+                      <TableRow key={peca.id} className="hover:bg-slate-50/50">
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-2">
+                            <div className={`p-1.5 rounded-lg ${tipoColors[peca.tipoVeiculo]}`}>
+                              <TipoIcon className="h-3.5 w-3.5" />
+                            </div>
+                            {peca.codigo}
+                          </div>
+                        </TableCell>
+                        <TableCell>{peca.descricao}</TableCell>
+                        <TableCell>{getMarcaNome(peca.marcaId)}</TableCell>
+                        <TableCell>
+                          <span className="text-xs text-slate-500">
+                            {getDepositoNome(peca.depositoId)} • {getLocalizacaoNome(peca.localizacaoId)}
+                          </span>
+                        </TableCell>
+                        <TableCell>{getStatusBadge(peca.status)}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-1">
                             <Button
                               variant="ghost"
                               size="icon"
                               onClick={() => {
                                 setPecaSelecionada(peca);
-                                setShowBaixaModal(true);
+                                setShowDetailModal(true);
                               }}
+                              className="hover:bg-blue-50 hover:text-blue-600"
                             >
-                              <ShoppingCart className="h-4 w-4 text-green-600" />
+                              <Eye className="h-4 w-4" />
                             </Button>
-                          )}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                setPecaSelecionada(peca);
+                                setShowQRModal(true);
+                              }}
+                              className="hover:bg-purple-50 hover:text-purple-600"
+                            >
+                              <QrCode className="h-4 w-4" />
+                            </Button>
+                            {peca.status === 'disponivel' && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                  setPecaSelecionada(peca);
+                                  setShowDetailModal(true);
+                                }}
+                                className="hover:bg-emerald-50 hover:text-emerald-600"
+                              >
+                                <ShoppingCart className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
                 )}
               </TableBody>
             </Table>
@@ -241,7 +280,12 @@ export default function ListagemPecas() {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between">
-              <span>Detalhes da Peça</span>
+              <span className="flex items-center gap-2">
+                <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-2 rounded-lg">
+                  <Eye className="h-4 w-4 text-white" />
+                </div>
+                Detalhes da Peça
+              </span>
               {pecaSelecionada && getStatusBadge(pecaSelecionada.status)}
             </DialogTitle>
           </DialogHeader>
@@ -267,70 +311,56 @@ export default function ListagemPecas() {
 
               {/* Informações */}
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-slate-500">Código</p>
-                  <p className="font-medium">{pecaSelecionada.codigo}</p>
+                <div className="p-3 bg-slate-50 rounded-lg">
+                  <p className="text-xs text-slate-500">Código</p>
+                  <p className="font-semibold text-slate-900">{pecaSelecionada.codigo}</p>
                 </div>
-                <div>
-                  <p className="text-sm text-slate-500">Data de Cadastro</p>
-                  <p className="font-medium">
+                <div className="p-3 bg-slate-50 rounded-lg">
+                  <p className="text-xs text-slate-500">Data de Cadastro</p>
+                  <p className="font-semibold text-slate-900">
                     {new Date(pecaSelecionada.dataCadastro).toLocaleDateString('pt-BR')}
                   </p>
                 </div>
-                <div className="col-span-2">
-                  <p className="text-sm text-slate-500">Descrição</p>
-                  <p className="font-medium">{pecaSelecionada.descricao}</p>
+                <div className="col-span-2 p-3 bg-slate-50 rounded-lg">
+                  <p className="text-xs text-slate-500">Descrição</p>
+                  <p className="font-semibold text-slate-900">{pecaSelecionada.descricao}</p>
                 </div>
-                <div>
-                  <p className="text-sm text-slate-500">Tipo de Veículo</p>
-                  <p className="font-medium capitalize">{pecaSelecionada.tipoVeiculo}</p>
+                <div className="p-3 bg-slate-50 rounded-lg">
+                  <p className="text-xs text-slate-500">Tipo de Veículo</p>
+                  <p className="font-semibold text-slate-900 capitalize">{pecaSelecionada.tipoVeiculo}</p>
                 </div>
-                <div>
-                  <p className="text-sm text-slate-500">Marca</p>
-                  <p className="font-medium">{pecaSelecionada.marca}</p>
+                <div className="p-3 bg-slate-50 rounded-lg">
+                  <p className="text-xs text-slate-500">Marca</p>
+                  <p className="font-semibold text-slate-900">{getMarcaNome(pecaSelecionada.marcaId)}</p>
                 </div>
-                <div>
-                  <p className="text-sm text-slate-500">Cor</p>
-                  <p className="font-medium">{pecaSelecionada.cor || 'Não informada'}</p>
+                <div className="p-3 bg-slate-50 rounded-lg">
+                  <p className="text-xs text-slate-500">Cor</p>
+                  <p className="font-semibold text-slate-900">{getCorNome(pecaSelecionada.corId)}</p>
                 </div>
-                <div>
-                  <p className="text-sm text-slate-500">Ano</p>
-                  <p className="font-medium">{pecaSelecionada.ano}</p>
+                <div className="p-3 bg-slate-50 rounded-lg">
+                  <p className="text-xs text-slate-500">Ano</p>
+                  <p className="font-semibold text-slate-900">{pecaSelecionada.ano}</p>
                 </div>
-                <div>
-                  <p className="text-sm text-slate-500">Depósito</p>
-                  <p className="font-medium">
-                    {pecaSelecionada.deposito === 'deposito1' ? 'Depósito 1' : 'Depósito 2'}
-                  </p>
+                <div className="p-3 bg-slate-50 rounded-lg">
+                  <p className="text-xs text-slate-500">Depósito</p>
+                  <p className="font-semibold text-slate-900">{getDepositoNome(pecaSelecionada.depositoId)}</p>
                 </div>
-                <div>
-                  <p className="text-sm text-slate-500">Setor</p>
-                  <p className="font-medium">{pecaSelecionada.setor}</p>
+                <div className="p-3 bg-slate-50 rounded-lg">
+                  <p className="text-xs text-slate-500">Localização</p>
+                  <p className="font-semibold text-slate-900">{getLocalizacaoNome(pecaSelecionada.localizacaoId)}</p>
                 </div>
-                <div className="col-span-2">
-                  <p className="text-sm text-slate-500">Localização</p>
-                  <p className="font-medium">{pecaSelecionada.localizacao}</p>
-                </div>
-                {pecaSelecionada.valor && (
-                  <div>
-                    <p className="text-sm text-slate-500">Valor de Venda</p>
-                    <p className="font-medium text-green-600">
-                      R$ {pecaSelecionada.valor.toFixed(2)}
-                    </p>
-                  </div>
-                )}
                 {pecaSelecionada.dataVenda && (
-                  <div>
-                    <p className="text-sm text-slate-500">Data da Venda</p>
-                    <p className="font-medium">
+                  <div className="p-3 bg-blue-50 rounded-lg">
+                    <p className="text-xs text-blue-600">Data da Baixa</p>
+                    <p className="font-semibold text-blue-900">
                       {new Date(pecaSelecionada.dataVenda).toLocaleDateString('pt-BR')}
                     </p>
                   </div>
                 )}
                 {pecaSelecionada.observacoes && (
-                  <div className="col-span-2">
-                    <p className="text-sm text-slate-500">Observações</p>
-                    <p className="font-medium">{pecaSelecionada.observacoes}</p>
+                  <div className="col-span-2 p-3 bg-slate-50 rounded-lg">
+                    <p className="text-xs text-slate-500">Observações</p>
+                    <p className="font-semibold text-slate-900">{pecaSelecionada.observacoes}</p>
                   </div>
                 )}
               </div>
@@ -346,15 +376,12 @@ export default function ListagemPecas() {
                   }}
                 >
                   <QrCode className="h-4 w-4 mr-2" />
-                  Ver QR Code
+                  Gerar QR Code
                 </Button>
                 {pecaSelecionada.status === 'disponivel' && (
                   <Button
-                    className="flex-1"
-                    onClick={() => {
-                      setShowDetailModal(false);
-                      setShowBaixaModal(true);
-                    }}
+                    className="flex-1 gradient-success"
+                    onClick={handleDarBaixa}
                   >
                     <ShoppingCart className="h-4 w-4 mr-2" />
                     Dar Baixa
@@ -373,119 +400,65 @@ export default function ListagemPecas() {
         </DialogContent>
       </Dialog>
 
-      {/* Modal de Baixa */}
-      <Dialog open={showBaixaModal} onOpenChange={setShowBaixaModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <ShoppingCart className="h-5 w-5" />
-              Dar Baixa no Estoque
-            </DialogTitle>
-            <DialogDescription>
-              Marque a peça como vendida. Informe o valor da venda (opcional).
-            </DialogDescription>
-          </DialogHeader>
-          
-          {pecaSelecionada && (
-            <div className="space-y-4">
-              <div className="p-4 bg-slate-50 rounded-lg">
-                <p className="font-medium">{pecaSelecionada.descricao}</p>
-                <p className="text-sm text-slate-500">{pecaSelecionada.codigo}</p>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="valor">Valor da Venda (opcional)</Label>
-                <div className="relative">
-                  <DollarSign className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                  <Input
-                    id="valor"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    placeholder="0,00"
-                    value={valorVenda}
-                    onChange={(e) => setValorVenda(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setShowBaixaModal(false)}>
-                  Cancelar
-                </Button>
-                <Button onClick={handleDarBaixa}>
-                  Confirmar Venda
-                </Button>
-              </DialogFooter>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
       {/* Modal de QR Code */}
       <Dialog open={showQRModal} onOpenChange={setShowQRModal}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <QrCode className="h-5 w-5" />
-              QR Code
+              <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-2 rounded-lg">
+                <QrCode className="h-4 w-4 text-white" />
+              </div>
+              QR Code da Peça
             </DialogTitle>
           </DialogHeader>
           
           {pecaSelecionada && (
             <div className="space-y-4">
-              <div className="flex gap-2">
-                <Button
-                  variant={qrType === 'peca' ? 'default' : 'outline'}
-                  onClick={() => setQrType('peca')}
-                  className="flex-1"
-                >
-                  Peça
-                </Button>
-                <Button
-                  variant={qrType === 'localizacao' ? 'default' : 'outline'}
-                  onClick={() => setQrType('localizacao')}
-                  className="flex-1"
-                >
-                  Localização
-                </Button>
-              </div>
-
-              <div className="flex flex-col items-center p-6 bg-white rounded-lg">
+              <div className="flex flex-col items-center p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl">
                 <QRCodeSVG
                   value={getQRCodeData()}
-                  size={200}
+                  size={220}
                   level="H"
                   includeMargin={true}
                 />
-                <p className="mt-4 text-sm text-slate-500 text-center">
-                  {qrType === 'peca' ? (
-                    <>
-                      <span className="font-medium">{pecaSelecionada.codigo}</span>
-                      <br />
-                      {pecaSelecionada.descricao}
-                    </>
-                  ) : (
-                    <>
-                      <span className="font-medium">Localização</span>
-                      <br />
-                      {pecaSelecionada.deposito === 'deposito1' ? 'Depósito 1' : 'Depósito 2'} - 
-                      Setor {pecaSelecionada.setor}
-                      <br />
-                      {pecaSelecionada.localizacao}
-                    </>
-                  )}
-                </p>
+                <div className="mt-4 text-center">
+                  <p className="font-bold text-lg text-slate-900">{pecaSelecionada.codigo}</p>
+                  <p className="text-sm text-slate-500">{pecaSelecionada.descricao}</p>
+                </div>
               </div>
 
-              <Button
-                onClick={() => window.print()}
-                variant="outline"
-                className="w-full"
-              >
-                Imprimir QR Code
-              </Button>
+              <div className="p-4 bg-slate-50 rounded-xl">
+                <p className="text-xs font-semibold text-slate-500 mb-2">Dados completos:</p>
+                <pre className="text-xs text-slate-600 bg-white p-3 rounded-lg overflow-auto max-h-40">
+                  {getQRCodeData()}
+                </pre>
+              </div>
+
+              <div className="flex gap-2">
+                <Button 
+                  onClick={() => window.print()} 
+                  variant="outline" 
+                  className="flex-1"
+                >
+                  <Printer className="h-4 w-4 mr-2" />
+                  Imprimir
+                </Button>
+                <Button 
+                  onClick={() => {
+                    const blob = new Blob([getQRCodeData()], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${pecaSelecionada.codigo}.json`;
+                    a.click();
+                  }} 
+                  variant="outline" 
+                  className="flex-1"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Salvar JSON
+                </Button>
+              </div>
             </div>
           )}
         </DialogContent>

@@ -23,7 +23,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = async (email: string, senha: string): Promise<boolean> => {
-    // Simulação de autenticação
     if (email === 'admin@desmanche.com' && senha === 'admin123') {
       const usuario: Usuario = {
         id: '1',

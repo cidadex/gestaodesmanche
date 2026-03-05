@@ -20,21 +20,34 @@ import {
   Download,
   Printer,
   Copy,
+  Car,
+  Bike,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { QRCodeSVG } from 'qrcode.react';
 import { toast } from 'sonner';
-import { SETORES, type Peca } from '@/types';
+import type { Peca, TipoVeiculo } from '@/types';
+
+const tipoIcons: Record<TipoVeiculo, typeof Car> = {
+  carro: Car,
+  moto: Bike,
+  bicicleta: Bike,
+};
+
+const tipoColors: Record<TipoVeiculo, string> = {
+  carro: 'bg-blue-500/10 text-blue-600',
+  moto: 'bg-purple-500/10 text-purple-600',
+  bicicleta: 'bg-emerald-500/10 text-emerald-600',
+};
 
 export default function QRCodes() {
-  const { pecas } = useData();
+  const { pecas, marcas, cores, depositos, localizacoes } = useData();
   const [modo, setModo] = useState<'individual' | 'localizacao'>('individual');
   const [pecaSelecionada, setPecaSelecionada] = useState<Peca | null>(null);
   const [busca, setBusca] = useState('');
   const [localizacaoConfig, setLocalizacaoConfig] = useState({
-    deposito: 'deposito1' as const,
-    setor: '',
-    localizacao: '',
+    depositoId: '',
+    localizacaoId: '',
   });
 
   const pecasFiltradas = pecas.filter(
@@ -45,22 +58,35 @@ export default function QRCodes() {
 
   const getQRData = () => {
     if (modo === 'individual' && pecaSelecionada) {
+      const marca = marcas.find(m => m.id === pecaSelecionada.marcaId)?.nome || '';
+      const cor = cores.find(c => c.id === pecaSelecionada.corId)?.nome || '';
+      const deposito = depositos.find(d => d.id === pecaSelecionada.depositoId)?.nome || '';
+      const localizacao = localizacoes.find(l => l.id === pecaSelecionada.localizacaoId)?.nome || '';
+      
       return JSON.stringify({
         tipo: 'peca',
         id: pecaSelecionada.id,
         codigo: pecaSelecionada.codigo,
         descricao: pecaSelecionada.descricao,
-        deposito: pecaSelecionada.deposito,
-        setor: pecaSelecionada.setor,
-        localizacao: pecaSelecionada.localizacao,
-      });
-    } else if (modo === 'localizacao') {
+        tipoVeiculo: pecaSelecionada.tipoVeiculo,
+        marca,
+        cor,
+        ano: pecaSelecionada.ano,
+        deposito,
+        localizacao,
+        observacoes: pecaSelecionada.observacoes,
+        dataCadastro: pecaSelecionada.dataCadastro,
+        status: pecaSelecionada.status,
+      }, null, 2);
+    } else if (modo === 'localizacao' && localizacaoConfig.localizacaoId) {
+      const deposito = depositos.find(d => d.id === localizacaoConfig.depositoId)?.nome || '';
+      const localizacao = localizacoes.find(l => l.id === localizacaoConfig.localizacaoId)?.nome || '';
+      
       return JSON.stringify({
         tipo: 'localizacao',
-        deposito: localizacaoConfig.deposito,
-        setor: localizacaoConfig.setor,
-        localizacao: localizacaoConfig.localizacao,
-      });
+        deposito,
+        localizacao,
+      }, null, 2);
     }
     return '';
   };
@@ -77,8 +103,9 @@ export default function QRCodes() {
   const getQRTitle = () => {
     if (modo === 'individual' && pecaSelecionada) {
       return pecaSelecionada.codigo;
-    } else if (modo === 'localizacao') {
-      return `Setor ${localizacaoConfig.setor || '?'}`;
+    } else if (modo === 'localizacao' && localizacaoConfig.localizacaoId) {
+      const loc = localizacoes.find(l => l.id === localizacaoConfig.localizacaoId);
+      return loc?.nome || 'Localização';
     }
     return '';
   };
@@ -86,8 +113,9 @@ export default function QRCodes() {
   const getQRSubtitle = () => {
     if (modo === 'individual' && pecaSelecionada) {
       return pecaSelecionada.descricao;
-    } else if (modo === 'localizacao') {
-      return `${localizacaoConfig.deposito === 'deposito1' ? 'Depósito 1' : 'Depósito 2'}${localizacaoConfig.localizacao ? ' - ' + localizacaoConfig.localizacao : ''}`;
+    } else if (modo === 'localizacao' && localizacaoConfig.localizacaoId) {
+      const dep = depositos.find(d => d.id === localizacaoConfig.depositoId);
+      return dep?.nome || '';
     }
     return '';
   };
@@ -95,27 +123,29 @@ export default function QRCodes() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">QR Codes</h1>
+        <h1 className="text-3xl font-bold text-gradient">QR Codes</h1>
         <p className="text-slate-500">Gere QR codes para peças ou localizações</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Configuração */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <QrCode className="h-5 w-5" />
+        <Card className="border-0 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-orange-50 to-amber-50 border-b">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <div className="bg-orange-500 p-2 rounded-lg">
+                <QrCode className="h-4 w-4 text-white" />
+              </div>
               Configuração
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="p-6 space-y-4">
             <div className="space-y-2">
-              <Label>Tipo de QR Code</Label>
+              <Label className="text-slate-700 font-medium">Tipo de QR Code</Label>
               <div className="flex gap-2">
                 <Button
                   variant={modo === 'individual' ? 'default' : 'outline'}
                   onClick={() => setModo('individual')}
-                  className="flex-1"
+                  className={`flex-1 ${modo === 'individual' ? 'gradient-primary' : ''}`}
                 >
                   <Package className="h-4 w-4 mr-2" />
                   Peça Individual
@@ -123,7 +153,7 @@ export default function QRCodes() {
                 <Button
                   variant={modo === 'localizacao' ? 'default' : 'outline'}
                   onClick={() => setModo('localizacao')}
-                  className="flex-1"
+                  className={`flex-1 ${modo === 'localizacao' ? 'gradient-primary' : ''}`}
                 >
                   <MapPin className="h-4 w-4 mr-2" />
                   Localização
@@ -134,7 +164,7 @@ export default function QRCodes() {
             {modo === 'individual' ? (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Buscar Peça</Label>
+                  <Label className="text-slate-700 font-medium">Buscar Peça</Label>
                   <div className="relative">
                     <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                     <Input
@@ -147,34 +177,40 @@ export default function QRCodes() {
                 </div>
 
                 {busca && pecasFiltradas.length > 0 && (
-                  <div className="border rounded-lg max-h-48 overflow-y-auto">
-                    {pecasFiltradas.map((peca) => (
-                      <button
-                        key={peca.id}
-                        onClick={() => {
-                          setPecaSelecionada(peca);
-                          setBusca('');
-                        }}
-                        className="w-full text-left p-3 hover:bg-slate-50 border-b last:border-b-0 transition-colors"
-                      >
-                        <p className="font-medium text-sm">{peca.descricao}</p>
-                        <p className="text-xs text-slate-500">
-                          {peca.codigo} • {peca.marca}
-                        </p>
-                      </button>
-                    ))}
+                  <div className="border rounded-xl max-h-48 overflow-y-auto">
+                    {pecasFiltradas.map((peca) => {
+                      const TipoIcon = tipoIcons[peca.tipoVeiculo];
+                      return (
+                        <button
+                          key={peca.id}
+                          onClick={() => {
+                            setPecaSelecionada(peca);
+                            setBusca('');
+                          }}
+                          className="w-full text-left p-3 hover:bg-slate-50 border-b last:border-b-0 transition-colors flex items-center gap-3"
+                        >
+                          <div className={`p-2 rounded-lg ${tipoColors[peca.tipoVeiculo]}`}>
+                            <TipoIcon className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm">{peca.descricao}</p>
+                            <p className="text-xs text-slate-500">{peca.codigo}</p>
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
 
                 {pecaSelecionada && (
-                  <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                    <p className="font-medium text-green-900">Peça selecionada:</p>
-                    <p className="text-sm text-green-800">{pecaSelecionada.descricao}</p>
-                    <p className="text-xs text-green-700">{pecaSelecionada.codigo}</p>
+                  <div className="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl border border-emerald-200">
+                    <p className="font-semibold text-emerald-900">Peça selecionada:</p>
+                    <p className="text-sm text-emerald-800">{pecaSelecionada.descricao}</p>
+                    <p className="text-xs text-emerald-700">{pecaSelecionada.codigo}</p>
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="mt-2 text-green-700"
+                      className="mt-2 text-emerald-700 hover:text-emerald-900"
                       onClick={() => setPecaSelecionada(null)}
                     >
                       Remover seleção
@@ -185,41 +221,23 @@ export default function QRCodes() {
             ) : (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="flex items-center gap-2">
+                  <Label className="text-slate-700 font-medium flex items-center gap-2">
                     <Building2 className="h-4 w-4" />
                     Depósito
                   </Label>
                   <Select
-                    value={localizacaoConfig.deposito}
+                    value={localizacaoConfig.depositoId}
                     onValueChange={(value) =>
-                      setLocalizacaoConfig({ ...localizacaoConfig, deposito: value as any })
+                      setLocalizacaoConfig({ depositoId: value, localizacaoId: '' })
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Selecione o depósito" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="deposito1">Depósito 1</SelectItem>
-                      <SelectItem value="deposito2">Depósito 2</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Setor</Label>
-                  <Select
-                    value={localizacaoConfig.setor}
-                    onValueChange={(value) =>
-                      setLocalizacaoConfig({ ...localizacaoConfig, setor: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o setor" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(SETORES || []).map((setor) => (
-                        <SelectItem key={setor} value={setor || "sem-setor"}>
-                          Setor {setor}
+                      {depositos.map((dep) => (
+                        <SelectItem key={dep.id} value={dep.id}>
+                          {dep.nome}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -227,15 +245,30 @@ export default function QRCodes() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="localizacao">Localização Específica</Label>
-                  <Input
-                    id="localizacao"
-                    placeholder="Ex: Prateleira A3, Box 12..."
-                    value={localizacaoConfig.localizacao}
-                    onChange={(e) =>
-                      setLocalizacaoConfig({ ...localizacaoConfig, localizacao: e.target.value })
+                  <Label className="text-slate-700 font-medium flex items-center gap-2">
+                    <MapPin className="h-4 w-4" />
+                    Localização
+                  </Label>
+                  <Select
+                    value={localizacaoConfig.localizacaoId}
+                    onValueChange={(value) =>
+                      setLocalizacaoConfig({ ...localizacaoConfig, localizacaoId: value })
                     }
-                  />
+                    disabled={!localizacaoConfig.depositoId}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione a localização" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {localizacoes
+                        .filter(l => l.depositoId === localizacaoConfig.depositoId)
+                        .map((loc) => (
+                          <SelectItem key={loc.id} value={loc.id}>
+                            {loc.nome}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             )}
@@ -243,23 +276,25 @@ export default function QRCodes() {
         </Card>
 
         {/* Visualização do QR Code */}
-        <Card>
-          <CardHeader>
+        <Card className="border-0 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 border-b">
             <CardTitle className="flex items-center justify-between">
               <span className="flex items-center gap-2">
-                <QrCode className="h-5 w-5" />
+                <div className="bg-purple-500 p-2 rounded-lg">
+                  <QrCode className="h-4 w-4 text-white" />
+                </div>
                 QR Code Gerado
               </span>
-              {(pecaSelecionada || (modo === 'localizacao' && localizacaoConfig.setor)) && (
-                <Badge variant="secondary">Pronto</Badge>
+              {(pecaSelecionada || (modo === 'localizacao' && localizacaoConfig.localizacaoId)) && (
+                <Badge className="bg-emerald-500 text-white">Pronto</Badge>
               )}
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6">
             {(modo === 'individual' && pecaSelecionada) ||
-            (modo === 'localizacao' && localizacaoConfig.setor) ? (
+            (modo === 'localizacao' && localizacaoConfig.localizacaoId) ? (
               <div className="space-y-4">
-                <div className="flex flex-col items-center p-6 bg-white rounded-lg border-2 border-dashed border-slate-200">
+                <div className="flex flex-col items-center p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border-2 border-dashed border-slate-200">
                   <QRCodeSVG
                     value={getQRData()}
                     size={250}
@@ -267,7 +302,7 @@ export default function QRCodes() {
                     includeMargin={true}
                   />
                   <div className="mt-4 text-center">
-                    <p className="font-bold text-lg">{getQRTitle()}</p>
+                    <p className="font-bold text-xl text-slate-900">{getQRTitle()}</p>
                     <p className="text-sm text-slate-500">{getQRSubtitle()}</p>
                   </div>
                 </div>
@@ -281,21 +316,33 @@ export default function QRCodes() {
                     <Printer className="h-4 w-4 mr-2" />
                     Imprimir
                   </Button>
-                  <Button variant="outline">
+                  <Button 
+                    variant="outline"
+                    onClick={() => {
+                      const blob = new Blob([getQRData()], { type: 'application/json' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `${getQRTitle()}.json`;
+                      a.click();
+                    }}
+                  >
                     <Download className="h-4 w-4 mr-2" />
                     Salvar
                   </Button>
                 </div>
 
-                <div className="p-3 bg-slate-50 rounded-lg">
+                <div className="p-3 bg-slate-50 rounded-xl">
                   <p className="text-xs text-slate-500 font-medium">Dados do QR Code:</p>
-                  <p className="text-xs text-slate-400 break-all mt-1">{getQRData()}</p>
+                  <pre className="text-xs text-slate-400 break-all mt-1 max-h-32 overflow-auto">
+                    {getQRData()}
+                  </pre>
                 </div>
               </div>
             ) : (
-              <div className="text-center py-12 text-slate-400">
-                <QrCode className="h-16 w-16 mx-auto mb-4" />
-                <p>
+              <div className="text-center py-16 text-slate-400">
+                <QrCode className="h-20 w-20 mx-auto mb-4 opacity-50" />
+                <p className="text-lg">
                   {modo === 'individual'
                     ? 'Selecione uma peça para gerar o QR Code'
                     : 'Preencha os dados da localização'}
@@ -306,22 +353,24 @@ export default function QRCodes() {
         </Card>
       </div>
 
-      {/* QR Codes em Massa */}
-      {modo === 'individual' && (
-        <Card>
-          <CardHeader>
+      {/* QR Codes Recentes */}
+      {modo === 'individual' && pecas.length > 0 && (
+        <Card className="border-0 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
             <CardTitle className="flex items-center gap-2">
-              <Package className="h-5 w-5" />
+              <div className="bg-blue-500 p-2 rounded-lg">
+                <Package className="h-4 w-4 text-white" />
+              </div>
               QR Codes Recentes
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {pecas.slice(0, 12).map((peca) => (
                 <div
                   key={peca.id}
                   onClick={() => setPecaSelecionada(peca)}
-                  className="cursor-pointer p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors text-center"
+                  className="cursor-pointer p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-all hover:shadow-lg text-center"
                 >
                   <QRCodeSVG
                     value={JSON.stringify({
@@ -329,15 +378,12 @@ export default function QRCodes() {
                       id: peca.id,
                       codigo: peca.codigo,
                       descricao: peca.descricao,
-                      deposito: peca.deposito,
-                      setor: peca.setor,
-                      localizacao: peca.localizacao,
                     })}
                     size={80}
                     level="L"
                     className="mx-auto"
                   />
-                  <p className="text-xs font-medium mt-2 truncate">{peca.codigo}</p>
+                  <p className="text-xs font-semibold mt-2 truncate text-slate-700">{peca.codigo}</p>
                   <p className="text-xs text-slate-500 truncate">{peca.descricao}</p>
                 </div>
               ))}

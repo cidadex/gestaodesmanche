@@ -10,6 +10,10 @@ import ListagemPecas from '@/pages/ListagemPecas';
 import BuscaPecas from '@/pages/BuscaPecas';
 import QRCodes from '@/pages/QRCodes';
 import ImportarPlanilha from '@/pages/ImportarPlanilha';
+import ConfigMarcas from '@/pages/ConfigMarcas';
+import ConfigCores from '@/pages/ConfigCores';
+import ConfigDepositos from '@/pages/ConfigDepositos';
+import ConfigLocalizacoes from '@/pages/ConfigLocalizacoes';
 
 function AppContent() {
   const { usuario, isLoading } = useAuth();
@@ -17,8 +21,8 @@ function AppContent() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-100">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500">
+        <div className="animate-spin rounded-full h-16 w-16 border-4 border-white/30 border-t-white"></div>
       </div>
     );
   }
@@ -41,6 +45,14 @@ function AppContent() {
         return <QRCodes />;
       case 'importar':
         return <ImportarPlanilha />;
+      case 'marcas':
+        return <ConfigMarcas />;
+      case 'cores':
+        return <ConfigCores />;
+      case 'depositos':
+        return <ConfigDepositos />;
+      case 'localizacoes':
+        return <ConfigLocalizacoes />;
       default:
         return <Dashboard />;
     }

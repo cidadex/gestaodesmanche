@@ -143,12 +143,12 @@ export default function CadastroPeca() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gradient">Cadastrar Peça</h1>
-        <p className="text-slate-500">Adicione uma nova peça ao sistema</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gradient">Cadastrar Peça</h1>
+        <p className="text-sm text-slate-500">Adicione uma nova peça ao sistema</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {/* Informações Básicas */}
           <Card className="border-0 shadow-lg">
             <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
@@ -174,7 +174,7 @@ export default function CadastroPeca() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-slate-700 font-medium">Tipo *</Label>
                   <Select
@@ -183,7 +183,7 @@ export default function CadastroPeca() {
                       setFormData({ ...formData, tipoVeiculo: value as TipoVeiculo, marcaId: '' })
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-11">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -200,11 +200,12 @@ export default function CadastroPeca() {
                     type="number"
                     value={formData.ano}
                     onChange={(e) => setFormData({ ...formData, ano: parseInt(e.target.value) })}
+                    className="h-11"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-slate-700 font-medium flex items-center gap-2">
                     <Tag className="h-4 w-4" />
@@ -214,7 +215,7 @@ export default function CadastroPeca() {
                     value={formData.marcaId}
                     onValueChange={(value) => setFormData({ ...formData, marcaId: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-11">
                       <SelectValue placeholder="Selecione" />
                     </SelectTrigger>
                     <SelectContent>
@@ -236,7 +237,7 @@ export default function CadastroPeca() {
                     value={formData.corId}
                     onValueChange={(value) => setFormData({ ...formData, corId: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-11">
                       <SelectValue placeholder="Selecione" />
                     </SelectTrigger>
                     <SelectContent>
@@ -426,11 +427,11 @@ export default function CadastroPeca() {
                 </pre>
               </div>
 
-              <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
                 <Button 
                   onClick={() => window.print()} 
                   variant="outline" 
-                  className="flex-1"
+                  className="flex-1 h-11"
                 >
                   <Printer className="h-4 w-4 mr-2" />
                   Imprimir
@@ -445,7 +446,7 @@ export default function CadastroPeca() {
                     a.click();
                   }} 
                   variant="outline" 
-                  className="flex-1"
+                  className="flex-1 h-11"
                 >
                   <Download className="h-4 w-4 mr-2" />
                   Salvar JSON

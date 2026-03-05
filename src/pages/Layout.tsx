@@ -160,31 +160,35 @@ export default function Layout({ children, currentPage, onPageChange }: LayoutPr
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
+      {/* Mobile Header */}
+      <header className="lg:hidden bg-slate-900 text-white p-4 flex items-center justify-between sticky top-0 z-40 shadow-md">
+        <div className="flex items-center gap-3">
+          <div className="gradient-primary p-2 rounded-lg">
+            <Car className="h-5 w-5 text-white" />
+          </div>
+          <h1 className="font-bold text-lg">Desmanche Pro</h1>
+        </div>
+        <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="text-white">
+              <Menu className="h-6 w-6" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-72 p-0 flex flex-col bg-slate-900 border-slate-800">
+            <MenuContent />
+          </SheetContent>
+        </Sheet>
+      </header>
+
       {/* Sidebar Desktop */}
       <aside className="hidden lg:flex w-72 flex-col bg-slate-900 fixed h-full">
         <MenuContent />
       </aside>
 
-      {/* Sidebar Mobile */}
-      <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-        <SheetTrigger asChild className="lg:hidden">
-          <Button
-            variant="default"
-            size="icon"
-            className="fixed top-4 left-4 z-50 gradient-primary shadow-lg"
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="w-72 p-0 flex flex-col bg-slate-900 border-slate-800">
-          <MenuContent />
-        </SheetContent>
-      </Sheet>
-
       {/* Main Content */}
-      <main className="flex-1 lg:ml-72">
-        <div className="p-4 lg:p-8">
+      <main className="flex-1 lg:ml-72 min-w-0">
+        <div className="p-3 sm:p-6 lg:p-8 pt-20 lg:pt-8">
           {children}
         </div>
       </main>

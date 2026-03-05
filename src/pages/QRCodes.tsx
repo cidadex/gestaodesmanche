@@ -123,11 +123,11 @@ export default function QRCodes() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gradient">QR Codes</h1>
-        <p className="text-slate-500">Gere QR codes para peças ou localizações</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gradient">QR Codes</h1>
+          <p className="text-sm text-slate-500">Gere QR codes para peças ou localizações</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {/* Configuração */}
         <Card className="border-0 shadow-lg">
           <CardHeader className="bg-gradient-to-r from-orange-50 to-amber-50 border-b">
@@ -141,7 +141,7 @@ export default function QRCodes() {
           <CardContent className="p-6 space-y-4">
             <div className="space-y-2">
               <Label className="text-slate-700 font-medium">Tipo de QR Code</Label>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Button
                   variant={modo === 'individual' ? 'default' : 'outline'}
                   onClick={() => setModo('individual')}

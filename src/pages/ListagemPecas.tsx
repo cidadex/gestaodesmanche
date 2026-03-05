@@ -137,8 +137,8 @@ export default function ListagemPecas() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gradient">Todas as Peças</h1>
-        <p className="text-slate-500">Gerencie o estoque de peças</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gradient">Todas as Peças</h1>
+        <p className="text-sm text-slate-500">Gerencie o estoque de peças</p>
       </div>
 
       {/* Filtros */}
@@ -170,9 +170,9 @@ export default function ListagemPecas() {
       </Card>
 
       {/* Tabela */}
-      <Card className="border-0 shadow-lg">
+      <Card className="border-0 shadow-lg overflow-hidden">
         <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 border-b">
-          <CardTitle className="flex items-center justify-between">
+          <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
             <span className="flex items-center gap-2">
               <div className="bg-purple-500 p-2 rounded-lg">
                 <Package className="h-4 w-4 text-white" />
@@ -185,72 +185,50 @@ export default function ListagemPecas() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <ScrollArea className="h-[500px]">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-slate-50/50">
-                  <TableHead>Código</TableHead>
-                  <TableHead>Descrição</TableHead>
-                  <TableHead>Marca</TableHead>
-                  <TableHead>Localização</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {pecasFiltradas.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center py-12 text-slate-500">
-                      <Package className="h-12 w-12 mx-auto mb-3 text-slate-300" />
-                      <p>Nenhuma peça encontrada</p>
-                    </TableCell>
+          <ScrollArea className="h-[500px] w-full">
+            <div className="min-w-[800px]">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-slate-50/50">
+                    <TableHead>Código</TableHead>
+                    <TableHead>Descrição</TableHead>
+                    <TableHead>Marca</TableHead>
+                    <TableHead>Localização</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
-                ) : (
-                  pecasFiltradas.map((peca) => {
-                    const TipoIcon = tipoIcons[peca.tipoVeiculo];
-                    return (
-                      <TableRow key={peca.id} className="hover:bg-slate-50/50">
-                        <TableCell className="font-medium">
-                          <div className="flex items-center gap-2">
-                            <div className={`p-1.5 rounded-lg ${tipoColors[peca.tipoVeiculo]}`}>
-                              <TipoIcon className="h-3.5 w-3.5" />
+                </TableHeader>
+                <TableBody>
+                  {pecasFiltradas.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center py-12 text-slate-500">
+                        <Package className="h-12 w-12 mx-auto mb-3 text-slate-300" />
+                        <p>Nenhuma peça encontrada</p>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    pecasFiltradas.map((peca) => {
+                      const TipoIcon = tipoIcons[peca.tipoVeiculo];
+                      return (
+                        <TableRow key={peca.id} className="hover:bg-slate-50/50">
+                          <TableCell className="font-medium">
+                            <div className="flex items-center gap-2">
+                              <div className={`p-1.5 rounded-lg ${tipoColors[peca.tipoVeiculo]}`}>
+                                <TipoIcon className="h-3.5 w-3.5" />
+                              </div>
+                              {peca.codigo}
                             </div>
-                            {peca.codigo}
-                          </div>
-                        </TableCell>
-                        <TableCell>{peca.descricao}</TableCell>
-                        <TableCell>{getMarcaNome(peca.marcaId)}</TableCell>
-                        <TableCell>
-                          <span className="text-xs text-slate-500">
-                            {getDepositoNome(peca.depositoId)} • {getLocalizacaoNome(peca.localizacaoId)}
-                          </span>
-                        </TableCell>
-                        <TableCell>{getStatusBadge(peca.status)}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-1">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => {
-                                setPecaSelecionada(peca);
-                                setShowDetailModal(true);
-                              }}
-                              className="hover:bg-blue-50 hover:text-blue-600"
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => {
-                                setPecaSelecionada(peca);
-                                setShowQRModal(true);
-                              }}
-                              className="hover:bg-purple-50 hover:text-purple-600"
-                            >
-                              <QrCode className="h-4 w-4" />
-                            </Button>
-                            {peca.status === 'disponivel' && (
+                          </TableCell>
+                          <TableCell>{peca.descricao}</TableCell>
+                          <TableCell>{getMarcaNome(peca.marcaId)}</TableCell>
+                          <TableCell>
+                            <span className="text-xs text-slate-500">
+                              {getDepositoNome(peca.depositoId)} • {getLocalizacaoNome(peca.localizacaoId)}
+                            </span>
+                          </TableCell>
+                          <TableCell>{getStatusBadge(peca.status)}</TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-1">
                               <Button
                                 variant="ghost"
                                 size="icon"
@@ -258,19 +236,44 @@ export default function ListagemPecas() {
                                   setPecaSelecionada(peca);
                                   setShowDetailModal(true);
                                 }}
-                                className="hover:bg-emerald-50 hover:text-emerald-600"
+                                className="hover:bg-blue-50 hover:text-blue-600"
                               >
-                                <ShoppingCart className="h-4 w-4" />
+                                <Eye className="h-4 w-4" />
                               </Button>
-                            )}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                )}
-              </TableBody>
-            </Table>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                  setPecaSelecionada(peca);
+                                  setShowQRModal(true);
+                                }}
+                                className="hover:bg-purple-50 hover:text-purple-600"
+                              >
+                                <QrCode className="h-4 w-4" />
+                              </Button>
+                              {peca.status === 'disponivel' && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => {
+                                    setPecaSelecionada(peca);
+                                    setShowDetailModal(true);
+                                  }}
+                                  className="hover:bg-emerald-50 hover:text-emerald-600"
+                                >
+                                  <ShoppingCart className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
           </ScrollArea>
         </CardContent>
       </Card>
@@ -310,7 +313,7 @@ export default function ListagemPecas() {
               )}
 
               {/* Informações */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="p-3 bg-slate-50 rounded-lg">
                   <p className="text-xs text-slate-500">Código</p>
                   <p className="font-semibold text-slate-900">{pecaSelecionada.codigo}</p>
@@ -321,7 +324,7 @@ export default function ListagemPecas() {
                     {new Date(pecaSelecionada.dataCadastro).toLocaleDateString('pt-BR')}
                   </p>
                 </div>
-                <div className="col-span-2 p-3 bg-slate-50 rounded-lg">
+                <div className="sm:col-span-2 p-3 bg-slate-50 rounded-lg">
                   <p className="text-xs text-slate-500">Descrição</p>
                   <p className="font-semibold text-slate-900">{pecaSelecionada.descricao}</p>
                 </div>
@@ -358,7 +361,7 @@ export default function ListagemPecas() {
                   </div>
                 )}
                 {pecaSelecionada.observacoes && (
-                  <div className="col-span-2 p-3 bg-slate-50 rounded-lg">
+                  <div className="sm:col-span-2 p-3 bg-slate-50 rounded-lg">
                     <p className="text-xs text-slate-500">Observações</p>
                     <p className="font-semibold text-slate-900">{pecaSelecionada.observacoes}</p>
                   </div>
@@ -366,7 +369,7 @@ export default function ListagemPecas() {
               </div>
 
               {/* Ações */}
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Button
                   variant="outline"
                   className="flex-1"
@@ -434,11 +437,11 @@ export default function ListagemPecas() {
                 </pre>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Button 
                   onClick={() => window.print()} 
                   variant="outline" 
-                  className="flex-1"
+                  className="flex-1 h-11"
                 >
                   <Printer className="h-4 w-4 mr-2" />
                   Imprimir
@@ -453,7 +456,7 @@ export default function ListagemPecas() {
                     a.click();
                   }} 
                   variant="outline" 
-                  className="flex-1"
+                  className="flex-1 h-11"
                 >
                   <Download className="h-4 w-4 mr-2" />
                   Salvar JSON

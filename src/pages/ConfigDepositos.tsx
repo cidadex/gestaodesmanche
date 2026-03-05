@@ -104,8 +104,8 @@ export default function ConfigDepositos() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gradient">Depósitos</h1>
-          <p className="text-slate-500">Gerencie os depósitos do sistema</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gradient">Depósitos</h1>
+          <p className="text-sm text-slate-500">Gerencie os depósitos do sistema</p>
         </div>
         <Button onClick={handleNovo} className="gradient-primary btn-glow">
           <Plus className="h-4 w-4 mr-2" />

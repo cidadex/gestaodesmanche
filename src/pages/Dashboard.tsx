@@ -93,76 +93,76 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gradient">Dashboard</h1>
-          <p className="text-slate-500">Visão geral do seu estoque</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gradient">Dashboard</h1>
+          <p className="text-sm text-slate-500">Visão geral do seu estoque</p>
         </div>
       </div>
 
       {/* Cards de Estatísticas - Coloridos */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <Card className="card-hover border-0 shadow-lg overflow-hidden">
           <div className={`h-1 gradient-primary`} />
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500">
+          <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-3 sm:p-6">
+            <CardTitle className="text-[10px] sm:text-sm font-medium text-slate-500">
               Total de Peças
             </CardTitle>
-            <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-2 rounded-lg">
-              <Package className="h-4 w-4 text-white" />
+            <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-1.5 sm:p-2 rounded-lg">
+              <Package className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-slate-900">{stats.total}</div>
-            <p className="text-xs text-slate-500 mt-1">Peças cadastradas</p>
+          <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
+            <div className="text-xl sm:text-3xl font-bold text-slate-900">{stats.total}</div>
+            <p className="text-[10px] sm:text-xs text-slate-500 mt-1">Peças cadastradas</p>
           </CardContent>
         </Card>
 
         <Card className="card-hover border-0 shadow-lg overflow-hidden">
           <div className="h-1 bg-gradient-to-r from-emerald-400 to-emerald-600" />
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500">
+          <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-3 sm:p-6">
+            <CardTitle className="text-[10px] sm:text-sm font-medium text-slate-500">
               Disponíveis
             </CardTitle>
-            <div className="bg-emerald-500/10 p-2 rounded-lg">
-              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+            <div className="bg-emerald-500/10 p-1.5 sm:p-2 rounded-lg">
+              <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-600" />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-emerald-600">{stats.disponiveis}</div>
-            <p className="text-xs text-slate-500 mt-1">Em estoque</p>
+          <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
+            <div className="text-xl sm:text-3xl font-bold text-emerald-600">{stats.disponiveis}</div>
+            <p className="text-[10px] sm:text-xs text-slate-500 mt-1">Em estoque</p>
           </CardContent>
         </Card>
 
         <Card className="card-hover border-0 shadow-lg overflow-hidden">
           <div className="h-1 bg-gradient-to-r from-blue-400 to-blue-600" />
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500">
+          <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-3 sm:p-6">
+            <CardTitle className="text-[10px] sm:text-sm font-medium text-slate-500">
               Baixa no Estoque
             </CardTitle>
-            <div className="bg-blue-500/10 p-2 rounded-lg">
-              <Warehouse className="h-4 w-4 text-blue-600" />
+            <div className="bg-blue-500/10 p-1.5 sm:p-2 rounded-lg">
+              <Warehouse className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-blue-600">{stats.vendidas}</div>
-            <p className="text-xs text-slate-500 mt-1">Peças retiradas</p>
+          <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
+            <div className="text-xl sm:text-3xl font-bold text-blue-600">{stats.vendidas}</div>
+            <p className="text-[10px] sm:text-xs text-slate-500 mt-1">Peças retiradas</p>
           </CardContent>
         </Card>
 
         <Card className="card-hover border-0 shadow-lg overflow-hidden">
           <div className="h-1 bg-gradient-to-r from-amber-400 to-orange-500" />
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500">
+          <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-3 sm:p-6">
+            <CardTitle className="text-[10px] sm:text-sm font-medium text-slate-500">
               Reservadas
             </CardTitle>
-            <div className="bg-amber-500/10 p-2 rounded-lg">
-              <Clock className="h-4 w-4 text-amber-600" />
+            <div className="bg-amber-500/10 p-1.5 sm:p-2 rounded-lg">
+              <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-amber-600" />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-amber-600">{stats.reservadas}</div>
-            <p className="text-xs text-slate-500 mt-1">Aguardando retirada</p>
+          <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
+            <div className="text-xl sm:text-3xl font-bold text-amber-600">{stats.reservadas}</div>
+            <p className="text-[10px] sm:text-xs text-slate-500 mt-1">Aguardando retirada</p>
           </CardContent>
         </Card>
       </div>
@@ -178,7 +178,7 @@ export default function Dashboard() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label className="text-slate-700 font-medium">Tipo de Veículo</Label>
               <Select

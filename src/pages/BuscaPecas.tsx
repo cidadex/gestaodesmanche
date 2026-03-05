@@ -137,8 +137,8 @@ export default function BuscaPecas() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gradient">Buscar Peças</h1>
-        <p className="text-slate-500">Pesquise peças por diversos critérios</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gradient">Buscar Peças</h1>
+        <p className="text-sm text-slate-500">Pesquise peças por diversos critérios</p>
       </div>
 
       <Card className="border-0 shadow-lg">
@@ -151,7 +151,7 @@ export default function BuscaPecas() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label className="text-slate-700 font-medium">Busca Rápida</Label>
               <div className="relative">
@@ -419,11 +419,11 @@ export default function BuscaPecas() {
                 </pre>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Button 
                   onClick={() => window.print()} 
                   variant="outline" 
-                  className="flex-1"
+                  className="flex-1 h-11"
                 >
                   <Printer className="h-4 w-4 mr-2" />
                   Imprimir
@@ -438,7 +438,7 @@ export default function BuscaPecas() {
                     a.click();
                   }} 
                   variant="outline" 
-                  className="flex-1"
+                  className="flex-1 h-11"
                 >
                   <Download className="h-4 w-4 mr-2" />
                   Salvar JSON

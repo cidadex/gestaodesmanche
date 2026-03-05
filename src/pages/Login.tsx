@@ -32,29 +32,28 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden p-4 sm:p-6">
       {/* Background animado */}
       <div className="absolute inset-0 gradient-hero" />
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-30" />
       
       {/* Círculos decorativos */}
-      <div className="absolute top-20 left-20 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl animate-pulse-slow" />
-      <div className="absolute bottom-20 right-20 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }} />
-      <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-pink-500/20 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '2s' }} />
+      <div className="hidden sm:block absolute top-20 left-20 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl animate-pulse-slow" />
+      <div className="hidden sm:block absolute bottom-20 right-20 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }} />
       
-      <div className="w-full max-w-md relative z-10 p-4">
+      <div className="w-full max-w-md relative z-10">
         {/* Logo animado */}
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-4 sm:mb-8">
           <div className="relative">
             <div className="absolute inset-0 bg-white/20 rounded-3xl blur-xl animate-pulse" />
-            <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6">
-              <Car className="h-16 w-16 text-white" />
+            <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+              <Car className="h-10 w-10 sm:h-16 sm:h-16 text-white" />
             </div>
           </div>
         </div>
         
-        <Card className="border-0 shadow-2xl bg-white/95 backdrop-blur-xl">
-          <CardHeader className="space-y-1 text-center pb-6">
+        <Card className="border-0 shadow-2xl bg-white/95 backdrop-blur-xl rounded-2xl overflow-hidden">
+          <CardHeader className="space-y-1 text-center pb-4 sm:pb-6">
             <div className="flex items-center justify-center gap-2 mb-2">
               <Zap className="h-5 w-5 text-amber-500" />
               <span className="text-sm font-medium text-slate-500 uppercase tracking-wider">Sistema Profissional</span>

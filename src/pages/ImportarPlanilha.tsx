@@ -218,8 +218,8 @@ export default function ImportarPlanilha() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gradient">Importar Planilha</h1>
-        <p className="text-slate-500">Importe peças em massa via arquivo Excel</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gradient">Importar Planilha</h1>
+          <p className="text-sm text-slate-500">Importe peças em massa via arquivo Excel</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -316,7 +316,7 @@ export default function ImportarPlanilha() {
 
               <div>
                 <p className="font-semibold mb-3 text-slate-700">Colunas suportadas:</p>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                   {['descricao', 'tipoVeiculo', 'marcaId', 'corId', 'ano', 'depositoId', 'localizacaoId', 'observacoes'].map((col) => (
                     <div key={col} className="flex items-center gap-2">
                       <Badge variant="secondary" className="font-mono text-xs">{col}</Badge>
@@ -340,7 +340,7 @@ export default function ImportarPlanilha() {
                 </div>
                 Preview da Importação
               </span>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Badge className="bg-emerald-500 text-white">{itensValidos} válidos</Badge>
                 {itensInvalidos > 0 && (
                   <Badge variant="destructive">{itensInvalidos} inválidos</Badge>
@@ -491,7 +491,7 @@ export default function ImportarPlanilha() {
                 </pre>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Button 
                   onClick={() => window.print()} 
                   variant="outline" 

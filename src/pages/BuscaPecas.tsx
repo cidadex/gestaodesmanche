@@ -36,7 +36,7 @@ export default function BuscaPecas() {
   const { filtrarPecas, darBaixaPeca } = useData();
   const [filtro, setFiltro] = useState<FiltroPecas>({
     tipoVeiculo: 'todos',
-    marca: '',
+    marca: 'todas-marcas',
     status: 'todos',
     deposito: 'todos',
     setor: '',
@@ -50,7 +50,7 @@ export default function BuscaPecas() {
   const [qrType, setQrType] = useState<'peca' | 'localizacao'>('peca');
 
   const marcasDisponiveis = filtro.tipoVeiculo && filtro.tipoVeiculo !== 'todos'
-    ? MARCAS_POR_TIPO[filtro.tipoVeiculo]
+    ? (MARCAS_POR_TIPO[filtro.tipoVeiculo] || [])
     : [];
 
   const handleBuscar = () => {
@@ -62,7 +62,7 @@ export default function BuscaPecas() {
   const handleLimpar = () => {
     setFiltro({
       tipoVeiculo: 'todos',
-      marca: '',
+      marca: 'todas-marcas',
       status: 'todos',
       deposito: 'todos',
       setor: '',
@@ -165,9 +165,9 @@ export default function BuscaPecas() {
                   <SelectValue placeholder="Todas" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas</SelectItem>
-                  {marcasDisponiveis.map((marca) => (
-                    <SelectItem key={marca} value={marca}>
+                  <SelectItem value="todas-marcas">Todas</SelectItem>
+                  {(marcasDisponiveis || []).map((marca) => (
+                    <SelectItem key={marca} value={marca || "sem-marca"}>
                       {marca}
                     </SelectItem>
                   ))}

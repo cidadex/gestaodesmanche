@@ -204,8 +204,8 @@ export default function CadastroPeca() {
                       <SelectValue placeholder="Selecione" />
                     </SelectTrigger>
                     <SelectContent>
-                      {marcasDisponiveis.map((marca) => (
-                        <SelectItem key={marca} value={marca}>
+                      {(marcasDisponiveis || []).map((marca) => (
+                        <SelectItem key={marca} value={marca || "sem-marca"}>
                           {marca}
                         </SelectItem>
                       ))}
@@ -282,8 +282,8 @@ export default function CadastroPeca() {
                       <SelectValue placeholder="Selecione" />
                     </SelectTrigger>
                     <SelectContent>
-                      {SETORES.map((setor) => (
-                        <SelectItem key={setor} value={setor}>
+                      {(SETORES || []).map((setor) => (
+                        <SelectItem key={setor} value={setor || "sem-setor"}>
                           Setor {setor}
                         </SelectItem>
                       ))}

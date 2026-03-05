@@ -29,7 +29,7 @@ export default function Dashboard() {
   const { getEstatisticas, filtrarPecas } = useData();
   const [filtro, setFiltro] = useState<FiltroPecas>({
     tipoVeiculo: 'todos',
-    marca: '',
+    marca: 'todas-marcas',
     status: 'todos',
     deposito: 'todos',
     periodoInicio: '',
@@ -49,7 +49,7 @@ export default function Dashboard() {
   const handleLimparFiltro = () => {
     setFiltro({
       tipoVeiculo: 'todos',
-      marca: '',
+      marca: 'todas-marcas',
       status: 'todos',
       deposito: 'todos',
       periodoInicio: '',
@@ -60,7 +60,7 @@ export default function Dashboard() {
   };
 
   const marcasDisponiveis = filtro.tipoVeiculo && filtro.tipoVeiculo !== 'todos'
-    ? MARCAS_POR_TIPO[filtro.tipoVeiculo]
+    ? (MARCAS_POR_TIPO[filtro.tipoVeiculo] || [])
     : [];
 
   const getStatusBadge = (status: string) => {
@@ -198,9 +198,9 @@ export default function Dashboard() {
                   <SelectValue placeholder="Selecione a marca" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas</SelectItem>
-                  {marcasDisponiveis.map((marca) => (
-                    <SelectItem key={marca} value={marca}>
+                  <SelectItem value="todas-marcas">Todas</SelectItem>
+                  {(marcasDisponiveis || []).map((marca) => (
+                    <SelectItem key={marca} value={marca || "sem-marca"}>
                       {marca}
                     </SelectItem>
                   ))}

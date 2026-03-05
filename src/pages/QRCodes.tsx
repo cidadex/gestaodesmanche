@@ -217,8 +217,8 @@ export default function QRCodes() {
                       <SelectValue placeholder="Selecione o setor" />
                     </SelectTrigger>
                     <SelectContent>
-                      {SETORES.map((setor) => (
-                        <SelectItem key={setor} value={setor}>
+                      {(SETORES || []).map((setor) => (
+                        <SelectItem key={setor} value={setor || "sem-setor"}>
                           Setor {setor}
                         </SelectItem>
                       ))}

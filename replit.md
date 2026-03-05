@@ -1,34 +1,34 @@
-# Sistema de Catalogação - Desmanche e Gerenciamento de Peças
+# Desmanche Pro
 
-## Overview
-A React + TypeScript + Vite frontend application for cataloging and managing auto parts (peças) in a salvage yard (desmanche) context. It includes QR code generation, spreadsheet import, parts search, and a dashboard.
+A professional car parts inventory management system (Gestão completa de peças e estoque) built with React, TypeScript, and Vite.
 
 ## Tech Stack
-- **Frontend**: React 19, TypeScript, Vite 7
-- **Styling**: Tailwind CSS v3 with shadcn/ui components
-- **State**: React Context API (AuthContext, DataContext)
-- **Forms**: react-hook-form + zod
+
+- **Framework**: React 19 + TypeScript
+- **Build Tool**: Vite 7
+- **Styling**: Tailwind CSS + Radix UI components (shadcn/ui)
+- **Forms**: React Hook Form + Zod
+- **Charts**: Recharts
 - **QR Codes**: qrcode.react
 - **Spreadsheet**: xlsx
-- **Charts**: recharts
 
 ## Project Structure
-- `src/App.tsx` - Root component with routing
-- `src/pages/` - Page components (Login, Dashboard, ListagemPecas, CadastroPeca, BuscaPecas, QRCodes, ImportarPlanilha, Layout)
-- `src/contexts/` - AuthContext, DataContext
+
+- `src/pages/` - Main application pages (Dashboard, Login, Parts listing/registration, QR Codes, Config pages)
+- `src/components/ui/` - Reusable UI components (shadcn/ui)
+- `src/contexts/` - React contexts (AuthContext, DataContext)
 - `src/hooks/` - Custom hooks
 - `src/types/` - TypeScript type definitions
-- `src/lib/utils.ts` - Utility functions
+- `src/lib/` - Utilities
 
 ## Development
-- Run: `npm run dev` on port 5000
-- Build: `npm run build` (outputs to `dist/`)
+
+- Dev server runs on `0.0.0.0:5000`
+- `npm run dev` - Start development server
+- `npm run build` - Build for production (output to `dist/`)
 
 ## Deployment
-- Type: Static site
+
+- Static deployment via Replit
 - Build command: `npm run build`
 - Public directory: `dist`
-
-## Demo Credentials
-- Admin: admin@desmanche.com / admin123
-- Operator: operador@desmanche.com / operador123

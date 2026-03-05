@@ -195,7 +195,7 @@ export default function BuscaPecas() {
                   <SelectValue placeholder="Todas as marcas" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas as marcas</SelectItem>
+                  <SelectItem value="none">Todas as marcas</SelectItem>
                   {marcas
                     .filter(m => !filtro.tipoVeiculo || filtro.tipoVeiculo === 'todos' || m.tipoVeiculo === filtro.tipoVeiculo)
                     .map((marca) => (
@@ -217,7 +217,7 @@ export default function BuscaPecas() {
                   <SelectValue placeholder="Todas as cores" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas as cores</SelectItem>
+                  <SelectItem value="none">Todas as cores</SelectItem>
                   {cores.map((cor) => (
                     <SelectItem key={cor.id} value={cor.id}>
                       <span className="flex items-center gap-2">
@@ -264,7 +264,7 @@ export default function BuscaPecas() {
                   <SelectValue placeholder="Todos os depósitos" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos os depósitos</SelectItem>
+                  <SelectItem value="none">Todos os depósitos</SelectItem>
                   {depositos.map((dep) => (
                     <SelectItem key={dep.id} value={dep.id}>
                       {dep.nome}

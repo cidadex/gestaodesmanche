@@ -282,7 +282,7 @@ export default function ConfigLocalizacoes() {
                   <SelectValue placeholder="Selecione o setor (opcional)" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Nenhum</SelectItem>
+                  <SelectItem value="none">Nenhum</SelectItem>
                   {SETORES.map((setor) => (
                     <SelectItem key={setor} value={setor}>
                       Setor {setor}
